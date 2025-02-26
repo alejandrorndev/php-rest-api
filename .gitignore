@@ -1,0 +1,4 @@
+/.env
+/vendor
+/run.sh
+/composer.lock
