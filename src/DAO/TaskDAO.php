@@ -30,18 +30,36 @@ class TaskDAO {
         ]);
     }
 
-    public function updateStatus(int $id, string $status): bool {
-        $stmt = $this->db->prepare("
-            UPDATE tasks 
-            SET status = :status 
-            WHERE id = :id
-        ");
-
-        return $stmt->execute([
-            ':id' => $id,
-            ':status' => $status
-        ]);
+    public function updateTask(int $id, array $data): bool {
+        $fields = [];
+        $params = [':id' => $id];
+    
+        if (isset($data['title'])) {
+            $fields[] = "title = :title";
+            $params[':title'] = $data['title'];
+        }
+    
+        if (isset($data['description'])) {
+            $fields[] = "description = :description";
+            $params[':description'] = $data['description'];
+        }
+    
+        if (isset($data['status'])) {
+            $fields[] = "status = :status";
+            $params[':status'] = $data['status'];
+        }
+    
+        if (empty($fields)) {
+            return false;
+        }
+    
+        $query = "UPDATE tasks SET " . implode(', ', $fields) . " WHERE id = :id";
+    
+        $stmt = $this->db->prepare($query);
+        
+        return $stmt->execute($params);
     }
+    
 
     //  (delete)
 }

@@ -7,6 +7,6 @@ $app->group('/api/tasks', function (RouteCollectorProxy $group) {
 
     $group->get('/list', [$taskController, 'getAll']);
     $group->post('/create', [$taskController, 'create']);
-    $group->put('/{id}/status', [$taskController, 'updateStatus']);
+    $group->put('/{id}', [$taskController, 'updateTask']);
     // ...(DELETE)
 });

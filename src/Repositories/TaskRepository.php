@@ -11,7 +11,7 @@ class TaskRepository {
         $this->taskDAO = new TaskDAO();
     }
 
-    public function getAllTasks(): array {
+    public function AllTasks(): array {
         return $this->taskDAO->getAll();
     }
 
@@ -19,8 +19,8 @@ class TaskRepository {
         return $this->taskDAO->create($task);
     }
 
-    public function updateTaskStatus(int $id, string $status): bool {
-        return $this->taskDAO->updateStatus($id, $status);
+    public function updateTask(int $id, array $data): bool {
+        return $this->taskDAO->updateTask($id, $data);
     }
 
     // ... otros métodos
