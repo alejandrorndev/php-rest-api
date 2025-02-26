@@ -1,0 +1,18 @@
+services:
+  postgres:
+    build: ./postgres
+    networks:
+      - mi-red
+    ports:
+      - "5432:5432"
+
+  apirest:
+    build: ./apirest
+    networks:
+      - mi-red
+    depends_on:
+      - postgres
+
+networks:
+  mi-red:
+    driver: bridge
