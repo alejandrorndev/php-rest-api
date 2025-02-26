@@ -1,17 +1,31 @@
 services:
   postgres:
-    build: ./postgres
-    networks:
-      - mi-red
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: mi_base_de_datos
     ports:
       - "5432:5432"
-
-  apirest:
-    build: ./apirest
     networks:
       - mi-red
+
+  apirest:
+    build: .
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST=postgres
+      - DB_NAME=mi_base_de_datos
+      - DB_USER=root
+      - DB_PASSWORD=12345
     depends_on:
       - postgres
+    networks:
+      - mi-red
 
 networks:
   mi-red:
