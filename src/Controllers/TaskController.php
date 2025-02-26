@@ -1,22 +1,17 @@
 <?php
 namespace App\Controllers;
 
-use Psr\Http\Message\ResponseInterface as Response;
+
 use Psr\Http\Message\ServerRequestInterface as Request;
-use App\Repositories\TaskRepository;
+use Psr\Http\Message\ResponseInterface as Response;
 use App\Models\Task;
+use App\Repositories\TaskRepository;
 
 class TaskController {
     private $taskRepository;
 
     public function __construct() {
         $this->taskRepository = new TaskRepository();
-    }
-
-    public function getAll(Request $request, Response $response): Response {
-        $tasks = $this->taskRepository->getAllTasks();
-        $response->getBody()->write(json_encode($tasks));
-        return $response->withHeader('Content-Type', 'application/json');
     }
 
     public function create(Request $request, Response $response): Response {
@@ -70,15 +65,71 @@ class TaskController {
         }
     }
     
+    public function getAll(Request $request, Response $response): Response {
+        $tasks = $this->taskRepository->AllTasks();
+        $response->getBody()->write(json_encode($tasks));
+        return $response->withHeader('Content-Type', 'application/json');
+    }
 
-    public function updateStatus(Request $request, Response $response, array $args): Response {
+    public function updated(Request $request, Response $response, array $args): Response {
         $id = (int)$args['id'];
-        $data = $request->getParsedBody();
-        $status = $data['status'];
+        $data = json_decode($request->getBody()->getContents(), true) ?? [];
+       
+        if (empty($data['title'])) {
+            $response->getBody()->write(json_encode(['error' => 'El título no puede ser vacio']));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        }
 
-        $result = $this->taskRepository->updateTaskStatus($id, $status);
+        if (empty(trim($data['description']))) {
+            $response->getBody()->write(json_encode(['error' => 'La descripción o puede ser vacia']));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        }
+    
+        if (empty(trim($data['status']))) {
+            $response->getBody()->write(json_encode(['error' => 'El estado no puede ser vacio']));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        }
+
+        if (!in_array($data['status'], ['pendiente', 'completada'])) {
+            $response->getBody()->write(json_encode(['error' => 'El estado debe ser pendiente o completada']));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        }
+
+        $result = $this->taskRepository->updateTask($id, $data);
         
-        $response->getBody()->write(json_encode(['success' => $result]));
+        if ($result) {
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'message' => 'Tarea actualizado exitosamente',
+                'taskID' => $id
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        } else {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'error' => 'Error al actulizar la tarea'
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+    }
+
+    public function delete(Request $request, Response $response, array $args): Response {
+        $id = (int)$args['id'];
+        $result = $this->taskRepository->deletedTask($id);
+        if ($result) {
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'message' => 'Tarea eliminada exitosamente',
+                'taskID' => $id
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        } else {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'error' => 'Error al eliminada la tarea'
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
         return $response->withHeader('Content-Type', 'application/json');
     }
 }
