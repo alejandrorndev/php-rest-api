@@ -71,7 +71,7 @@ class TaskController {
         return $response->withHeader('Content-Type', 'application/json');
     }
 
-    public function updateTask(Request $request, Response $response, array $args): Response {
+    public function updated(Request $request, Response $response, array $args): Response {
         $id = (int)$args['id'];
         $data = json_decode($request->getBody()->getContents(), true) ?? [];
        
@@ -111,5 +111,25 @@ class TaskController {
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
+    }
+
+    public function delete(Request $request, Response $response, array $args): Response {
+        $id = (int)$args['id'];
+        $result = $this->taskRepository->deletedTask($id);
+        if ($result) {
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'message' => 'Tarea eliminada exitosamente',
+                'taskID' => $id
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        } else {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'error' => 'Error al eliminada la tarea'
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+        return $response->withHeader('Content-Type', 'application/json');
     }
 }

@@ -56,10 +56,17 @@ class TaskDAO {
         $query = "UPDATE tasks SET " . implode(', ', $fields) . " WHERE id = :id";
     
         $stmt = $this->db->prepare($query);
-        
+
         return $stmt->execute($params);
     }
     
+    public function delete(int $id): bool {
+        $params = [':id' => $id];
+    
+        $query = "DELETE FROM tasks  "." WHERE id = :id";
+    
+        $stmt = $this->db->prepare($query);
 
-    //  (delete)
+        return $stmt->execute($params);
+    }
 }

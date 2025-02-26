@@ -23,5 +23,7 @@ class TaskRepository {
         return $this->taskDAO->updateTask($id, $data);
     }
 
-    // ... otros métodos
+    public function deletedTask(int $id): bool {
+        return $this->taskDAO->delete($id);
+    }
 }
