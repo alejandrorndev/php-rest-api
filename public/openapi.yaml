@@ -1,0 +1,186 @@
+openapi: 3.0.0
+info:
+  title: 'Task CRUD API'
+  description: 'API para gestionar tareas con Slim 4'
+  contact:
+    email: soporte@miapi.com
+  version: 1.0.0
+servers:
+  -
+    url: 'http://localhost:8000'
+    description: 'Servidor local'
+paths:
+  /: {  }
+  /api/tasks/create:
+    post:
+      tags:
+        - Tareas
+      summary: 'Crea una nueva tarea'
+      operationId: 61c1e51b99ed7125efe610c4d0c71485
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - title
+                - description
+                - status
+              properties:
+                title:
+                  type: string
+                  example: 'Aprender Slim 4'
+                description:
+                  type: string
+                  example: 'Detalles de la tarea'
+                status:
+                  type: string
+                  enum: [pendiente, completada]
+                  example: pendiente
+              type: object
+      responses:
+        '201':
+          description: 'Tarea creada exitosamente'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 'Tarea creada exitosamente' }
+                  task: { properties: { title: { type: string, example: 'Aprender Slim 4' }, description: { type: string, example: 'Detalles de la tarea' }, status: { type: string, example: pendiente } }, type: object }
+                type: object
+        '400':
+          description: 'Faltan campos obligatorios o error de validación'
+          content:
+            application/json:
+              schema:
+                properties:
+                  error: { type: string, example: 'El título es obligatorio' }
+                type: object
+  /api/tasks/list:
+    get:
+      tags:
+        - Tareas
+      summary: 'Obtiene todas las tareas registradas'
+      operationId: bb623eeeba61995eba1d2d7d5a2c02fa
+      responses:
+        '200':
+          description: 'Lista de tareas'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties: { id: { type: integer, example: 8 }, title: { type: string, example: 'otro nuevo titulo' }, description: { type: string, example: 'Implementando Implementando Implementando Implementando' }, status: { type: string, example: pendiente } }
+                  type: object
+  '/api/tasks/{id}':
+    put:
+      tags:
+        - Tareas
+      summary: 'Actualiza una tarea existente'
+      operationId: 9eb89d34020819b1580cdaf1b1e84058
+      parameters:
+        -
+          name: id
+          in: path
+          description: 'ID de la tarea a actualizar'
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: 'Datos de la tarea a actualizar'
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - title
+                - description
+                - status
+              properties:
+                title:
+                  type: string
+                  example: 'dddddddddddddd dossss nuevo titulo'
+                description:
+                  type: string
+                  example: 'Implemewwwwwwwwntando Implementando Implementando Implementando'
+                status:
+                  type: string
+                  enum: [pendiente, completada]
+                  example: pendiente
+              type: object
+      responses:
+        '200':
+          description: 'Tarea actualizada exitosamente'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 'Tarea actualizada exitosamente' }
+                  taskID: { type: integer, example: 1 }
+                type: object
+        '400':
+          description: 'Error de validación: algún campo obligatorio está vacío'
+          content:
+            application/json:
+              schema:
+                properties:
+                  error: { type: string, example: 'El título no puede ser vacio' }
+                type: object
+        '500':
+          description: 'Error al actualizar la tarea'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  error: { type: string, example: 'Error al actualizar la tarea' }
+                type: object
+  '/api/tasks/delete/{id}':
+    delete:
+      tags:
+        - Tareas
+      summary: 'Elimina una tarea existente'
+      operationId: ccdca70afeea673f90a4a71ed63de22a
+      parameters:
+        -
+          name: id
+          in: path
+          description: 'ID de la tarea a eliminar'
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'Tarea eliminada exitosamente'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 'Tarea eliminada exitosamente' }
+                  taskID: { type: integer, example: 1 }
+                type: object
+        '400':
+          description: "Falta el argumento 'id' en la solicitud"
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  error: { type: string, example: 'Falta el argumento id en la solicitud' }
+                type: object
+        '500':
+          description: 'Error al eliminar la tarea'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  error: { type: string, example: 'Error al eliminar la tarea' }
+                type: object
+tags:
+  -
+    name: Tareas
+    description: Tareas
